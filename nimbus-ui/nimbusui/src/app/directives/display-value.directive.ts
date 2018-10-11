@@ -17,6 +17,7 @@
 'use strict';
 import { Directive, ElementRef, Renderer2, Input, SimpleChanges } from '@angular/core';
 import { ParamConfig } from '../shared/param-config';
+import { Param } from "../shared/param-state";
 /**
  * \@author Dinakar.Meda
  * \@whatItDoes 
@@ -30,7 +31,11 @@ import { ParamConfig } from '../shared/param-config';
 export class DisplayValueDirective {
     @Input('nmDisplayValue') displayValue: any;
     @Input('config') config: ParamConfig;
+    @Input('path') path: Param;
+
+
     static placeholder: string = 'placeholder';
+    private static readonly DEFAULT_VALUE_STYLES_PATH = '/';
 
     constructor(private el: ElementRef, private renderer: Renderer2) {
     }
@@ -40,38 +45,63 @@ export class DisplayValueDirective {
         if the applyValueStyles attribute is set to true.
     */
     ngOnInit() {
-        if (this.config && this.config.uiStyles.attributes.applyValueStyles) {
-            this.renderer.addClass(this.el.nativeElement, this.config.code); // Field Name
 
-            if (this.displayValue && ((this.displayValue instanceof String && this.displayValue.trim() !== '')
-                                || this.displayValue === '')) {
-                this.renderer.addClass(this.el.nativeElement, this.getValue(this.displayValue)); // Field Value
-            } else {
-                this.renderer.addClass(this.el.nativeElement, DisplayValueDirective.placeholder); // placeholder Value
-            }
-        }
+        this.apply();
+
     }
 
     /*
         Handle value changes 
     */
     ngOnChanges(changes: SimpleChanges) {
+
+        this.apply(changes);
+
+    }
+
+    /**
+     * 
+     * @param changes 
+     */
+    private apply(changes?: SimpleChanges): void {
+
+        this.config;
+
         if (this.config && this.config.uiStyles.attributes.applyValueStyles) {
-            // Remove the previous value styles
-            if (changes.displayValue.previousValue === undefined) {
+            this.renderer.addClass(this.el.nativeElement, this.config.code); // Field Name
+            let finalDisplayValue = changes ? changes.displayValue.currentValue : this.displayValue;
+            // If valueStylesPath is anything other than default, then retrieve the value 
+            // of the param identified by valueStylesPath and prefer it.
+            let valueStylesPath = this.config.uiStyles.attributes.valueStylesPath;
+            // "/../nickname"
+            
+            if (DisplayValueDirective.DEFAULT_VALUE_STYLES_PATH !== valueStylesPath) {
+                
+                // TODO Retrieve the value of the param identified by valueStylesPath.
+                // window.location.hash.split('#')[1]
+                // document.getElementsByClassName("nickname")[0].innerText
+                console.log(this.path);
+                let retrievedValue = "Andy";
+                 // If found, Set the retrieved value into finalDisplayValue
+                if (retrievedValue) {
+                    finalDisplayValue = retrievedValue;
+                }
+            }
+
+            // Remove the previous value styles (if applicable)
+            if (changes && changes.displayValue.previousValue === undefined) {
                 this.renderer.removeClass(this.el.nativeElement, DisplayValueDirective.placeholder);
-            } else {
+            } else if (changes){
                 this.renderer.removeClass(this.el.nativeElement, this.getValue(changes.displayValue.previousValue));
             }
-            // Add current value styles
-            if (changes.displayValue.currentValue === undefined || changes.displayValue.currentValue === '' ||
-                (changes.displayValue.currentValue instanceof String && changes.displayValue.currentValue.trim() === '') ||
-                changes.displayValue.currentValue === null) {
-                this.renderer.addClass(this.el.nativeElement, DisplayValueDirective.placeholder);
+            // Add the value styles
+            if (finalDisplayValue && (!this.isEmpty(finalDisplayValue))) {
+                this.renderer.addClass(this.el.nativeElement, this.getValue(finalDisplayValue)); // Field Value
             } else {
-                this.renderer.addClass(this.el.nativeElement, this.getValue(changes.displayValue.currentValue));
+                this.renderer.addClass(this.el.nativeElement, DisplayValueDirective.placeholder); // placeholder Value
             }
         }
+
     }
 
      /*
@@ -84,5 +114,13 @@ export class DisplayValueDirective {
         } else {
             return val;
         }
+    }
+     /**
+     * Determine whether or not the provided string is empty. The provided
+     * string is considered empty if it is undefined or contains only whitespace.
+     * @param str the string to check
+     */
+    private isEmpty(str: string): boolean {
+        return !str || str.trim() === '';
     }
 }

@@ -42,6 +42,7 @@ import { Param } from '../../../shared/param-state';
 import { HttpMethod } from './../../../shared/command.enum';
 import { TableComponentConstants } from './table.component.constants';
 import { ViewComponent, ComponentTypes } from '../../../shared/param-annotations.enum';
+import { ConfigService } from '../../../services/config.service';
 
 export const CUSTOM_INPUT_CONTROL_VALUE_ACCESSOR: any = {
     provide: NG_VALUE_ACCESSOR,
@@ -127,6 +128,7 @@ export class DataTable extends BaseElement implements ControlValueAccessor {
 
     constructor(
         private pageSvc: PageService,
+        private configSvc: ConfigService,
         private _wcs: WebContentSvc,
         private gridService: GridService,
         private dtFormat: DateTimeFormatPipe,
@@ -216,6 +218,7 @@ export class DataTable extends BaseElement implements ControlValueAccessor {
 
         this.pageSvc.gridValueUpdate$.subscribe(event => {
             if (event.path == this.element.path) {
+                console.log(this.configSvc);
                 this.value = event.gridList;
                 
                 // iterate over currently expanded rows and refresh the data
@@ -273,6 +276,7 @@ export class DataTable extends BaseElement implements ControlValueAccessor {
 
     getCellDisplayValue(rowData: any, col: ParamConfig) {
         let cellData = rowData[col.code];
+        col.uiStyles.attributes.applyValueStyles
         if (cellData) {
             if (super.isDate(col.type.name)) {
                 return this.dtFormat.transform(cellData, col.uiStyles.attributes.datePattern, col.type.name);

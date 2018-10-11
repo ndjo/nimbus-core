@@ -1137,6 +1137,14 @@ public class ViewConfig {
 		 * 
 		 */
 		boolean applyValueStyles() default false;
+		
+		
+		/**
+		 * When provided, will use the state value found for the param
+		 * identified by {@code valueStylesPatH}. <p>The default value is the
+		 * path param represented by this decorated field.
+		 */
+		String valueStylesPath() default "/";
 
 		/**
 		 * <p>The date/time components to include when displaying this

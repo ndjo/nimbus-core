@@ -13,9 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package com.antheminc.oss.nimbus.test.scenarios.s7.core;
-
-import java.time.LocalDate;
+package com.antheminc.oss.nimbus.test.scenarios.s10.core;
 
 import com.antheminc.oss.nimbus.domain.defn.Domain;
 import com.antheminc.oss.nimbus.domain.defn.Domain.ListenerType;
@@ -29,27 +27,16 @@ import lombok.Setter;
 import lombok.ToString;
 
 /**
- * @author Swetha Vemuri
- * @author Rakesh Patel
+ * 
+ * @author Tony Lopez
  *
  */
-@Domain(value="s7c_main", includeListeners = { ListenerType.persistence })
-@Repo(alias = "s7c_main", value = Database.rep_mongodb, cache = Cache.rep_device)
+@Domain(value="s10c_main", includeListeners = { ListenerType.persistence })
+@Repo(alias = "s10c_main", value = Database.rep_mongodb, cache = Cache.rep_device)
 @Getter @Setter @ToString
-public class S7C_CoreMain extends IdLong {
+public class S10C_CoreMain extends IdLong {
 	
 	private static final long serialVersionUID = 1L;
-	private String attr1;
-	private String attr1_clone;
-	private LocalDate date1;
-	
-	
-	@Domain(value="s7c_corestatic", includeListeners = { ListenerType.persistence })
-	@Repo(alias = "s7c_corestatic", value = Database.rep_mongodb, cache = Cache.rep_device)
-	@Getter @Setter
-	public static class S7C_CoreStatic extends IdLong {
-		
-		private static final long serialVersionUID = 1L;
-		private String staticAttr;
-	}
+
+	private String v1;
 }

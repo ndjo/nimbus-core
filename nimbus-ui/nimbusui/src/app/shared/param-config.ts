@@ -209,6 +209,7 @@ export class UiAttribute implements Serializable<UiAttribute,string> {
     info: string;
     page: string;
     applyValueStyles: boolean;
+    valueStylesPath: string;
     expandable: boolean;
     border: boolean;
     showSourceControls: boolean;

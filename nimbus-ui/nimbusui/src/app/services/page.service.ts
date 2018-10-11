@@ -742,6 +742,11 @@ export class PageService {
                                         let config = this.configService.getViewConfigById(responseGridParam.configId);
                                         if(config != null && config != undefined) {
                                                 this.replaceSourceParamkeys(param,responseGridParam);
+
+                                                // retrieve the cached param from config service's flow config
+                                                let cachedParam: Param = ParamUtils.findParamByPath(this.configService.flowConfigs['ownerlandingview'], param.path);
+                                                // update the cached Param to be equal to the new sourceParam (will this set by reference work?)
+                                                cachedParam = param;
                                         }
                                 } else { // Nested Collection. Need to traverse to right location
                                         let nestedPath = eventModel.value.path.substr(param.path.length + 1);
@@ -870,7 +875,9 @@ export class PageService {
                         this.replaceSourceParamkeys(sourceParam,responseParam);
                         this.eventUpdate.next(sourceParam); 
                         this.validationUpdate.next(sourceParam);
+                        //sourceParam: UI, responseParam: server response
                         this.updateNestedParameters(sourceParam,responseParam);
+                        //TODO: Set source param in config service flowconfigs
                 } else {
                         this.logger.debug('Could not process the update from the server for ' + responseParam.path + ' because config is undefined.');
                 }
