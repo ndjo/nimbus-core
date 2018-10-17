@@ -57,6 +57,7 @@ export class Param implements Serializable<Param, string> {
     _config: ParamConfig;
     labels: LabelConfig[];
     elemLabels: Map<string, LabelConfig[]>;
+    style: any;
 
     constructor(private configSvc: ConfigService) {}
 
@@ -74,7 +75,20 @@ export class Param implements Serializable<Param, string> {
     private createRowData(param: Param) {
         let rowData: any = {};
         let isTreeGrid = this.config != null && this.config.uiStyles && this.config.uiStyles.attributes.alias == ViewComponent.treeGrid.toString();
-        rowData = param.leafState;
+        for(let code in param.leafState) {
+            if(code == 'elemId') {
+                continue;
+            }
+            rowData[code] = {};
+            rowData[code].leafState = param.leafState[code];  
+            for(let collElemParam of param.type.model.params) {
+                if(code == collElemParam.config.code) {
+                    rowData[code].style = collElemParam.style;
+                    break;
+                }
+            }
+        }
+        rowData['elemId'] = param.leafState.elemId;
         if(param.type.model) {
             rowData['nestedGridParam'] = [];
             for(let p of param.type.model.params) {
@@ -222,7 +236,9 @@ export class Param implements Serializable<Param, string> {
                 this.leafState = ParamUtils.applyLeafStateTransformations(inJson.leafState, this);
             }
         }
-
+        if ( inJson.style ) {
+            this.style = inJson.style;
+        }
         if ( inJson.collectionElem && this.leafState) {
             this.leafState = this.createRowData(this);
         }

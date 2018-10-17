@@ -272,7 +272,7 @@ export class DataTable extends BaseElement implements ControlValueAccessor {
     }
 
     getCellDisplayValue(rowData: any, col: ParamConfig) {
-        let cellData = rowData[col.code];
+        let cellData = rowData[col.code].leafState;
         if (cellData) {
             if (super.isDate(col.type.name)) {
                 return this.dtFormat.transform(cellData, col.uiStyles.attributes.datePattern, col.type.name);
